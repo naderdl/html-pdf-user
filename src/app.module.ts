@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { CryptoModule } from './crypto/crypto.module';
+import { DocumentModule } from './document/document.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { CryptoModule } from './crypto/crypto.module';
       dbName: 'test',
     }),
     CryptoModule,
+    DocumentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
