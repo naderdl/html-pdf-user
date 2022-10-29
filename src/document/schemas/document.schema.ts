@@ -9,9 +9,6 @@ export type DocumentDocument = Document & MongooseDocument;
   toObject: { virtuals: true, versionKey: false },
 })
 export class Document {
-  //   @Prop({ required: true })
-  //   userId: string;
-
   @Prop({ required: true })
   content: string;
 
@@ -20,6 +17,9 @@ export class Document {
 
   @Prop({ required: true })
   height: number;
+
+  @Prop({ required: true })
+  apiKey: string;
 }
 
 export const DocumentSchema = SchemaFactory.createForClass(Document);
