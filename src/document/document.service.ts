@@ -19,23 +19,22 @@ export class DocumentService {
     createDocumentQueryParamDto: CreateDocumentQueryParamDto,
     apiKey: string,
   ) {
-    const document = new this.documentModel({
+    const createdDocument = await this.documentModel.create({
       ...createDocumentDto,
       ...createDocumentQueryParamDto,
       apiKey,
     });
 
-    const savedDocument = await document.save();
-
-    return { id: savedDocument.id };
+    return { id: createdDocument.id };
   }
 
   findAll(findAllDocumentDto: FindAllDocumentDto, apiKey: string) {
     return this.documentModel
-      .find({ apiKey })
-      .sort('_id')
-      .skip(findAllDocumentDto.size * (findAllDocumentDto.page - 1))
-      .limit(findAllDocumentDto.size)
+      .find({ apiKey }, null, {
+        sort: '_id',
+        skip: findAllDocumentDto.size * (findAllDocumentDto.page - 1),
+        limit: findAllDocumentDto.size,
+      })
       .exec();
   }
 
@@ -48,13 +47,12 @@ export class DocumentService {
   }
 
   async remove(id: string, apiKey: string) {
-    const document = await this.documentModel
-      .findOne({ _id: id, apiKey })
-      .exec();
-    if (!document) throw new NotFoundException('document not found');
-
-    await this.documentModel.remove(document);
-    return 'success';
+    try {
+      await this.documentModel.remove({ _id: id, apiKey });
+      return { deleted: true };
+    } catch (error) {
+      return { deleted: false, message: error.message };
+    }
   }
 
   async downloadOne(id: string, apiKey: string) {

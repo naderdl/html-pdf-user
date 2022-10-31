@@ -7,9 +7,9 @@ import {
   Delete,
   Query,
   UseGuards,
-  Res,
+  Header,
+  StreamableFile,
 } from '@nestjs/common';
-import { Response } from 'express';
 import { ApiKey } from './apiKey.decorator';
 import { ApiKeyGuard } from './apiKey.guard';
 import { DocumentService } from './document.service';
@@ -56,15 +56,10 @@ export class DocumentController {
   }
 
   @Get('/download/:id')
-  async downloadOne(
-    @Param('id') id: string,
-    @ApiKey() apiKey: string,
-    @Res() response: Response,
-  ) {
-    const documentBuffer = await this.documentService.downloadOne(id, apiKey);
-
-    response.setHeader('Content-Type', 'application/pdf');
-    response.setHeader('Content-Disposition', 'attachment; filename=quote.pdf');
-    response.end(documentBuffer, 'binary');
+  @Header('Content-Type', 'application/pdf')
+  @Header('Content-Disposition', 'attachment; filename=quote.pdf')
+  async downloadOne(@Param('id') id: string, @ApiKey() apiKey: string) {
+    const fileBuffer = await this.documentService.downloadOne(id, apiKey);
+    return new StreamableFile(fileBuffer);
   }
 }
